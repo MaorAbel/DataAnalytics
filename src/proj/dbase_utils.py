@@ -37,7 +37,8 @@ def _df_from_records(list_of_dicts, index_str='imdb_id'):
 
 
 def _df_from_csv(path, index_col='imdb_id'):
-    return pd.DataFrame.from_csv(path, index_col=index_col)
+    df = pd.DataFrame.from_csv(path, index_col=index_col)
+    return df[~pd.isnull(df.index)]
 
 
 def _get_releavent_path(path, key):

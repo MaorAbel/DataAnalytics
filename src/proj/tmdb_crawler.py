@@ -73,7 +73,12 @@ class TMDBSmall(_DBBase):
         print 'TMDB is fetching first', len(ids), 'records from', self.year
         for id in tqdm(ids):
             try:
-                list_ += [tmdb_inter.load(id)]
+                res = tmdb_inter.load(id)
+                if 'imdb_id' in res and res['imdb_id'] is not None and len(
+                        res['imdb_id']) > 0:
+                    list_ += [res]
+                else:
+                    print id, 'did not return and IMDb index, dropping it.'
             except:
                 print self._print_err(id, 'TMDB')
         print 'Done'

@@ -92,12 +92,13 @@ def save_all_intermediary(path, max_records=None, **kwargs):
     save_all_non_tmdb(path_tmdb, **kwargs)
 
 
-def fuse_year(year, do_tmdb=True, do_wiki=True):
+def fuse_year(year, do_tmdb=True, do_wiki=False):
 
     print 'Fusing', year, '...'
     omdb_df = OMDB.from_csv_def(year)
     print omdb_df.path
     df_base = omdb_df.extract_important()
+    df_base = df_base[~pd.isnull(df_base.index)]
 
     df_tmdb = None
     if do_tmdb:
@@ -105,6 +106,7 @@ def fuse_year(year, do_tmdb=True, do_wiki=True):
         if tmdb_df is not None:
             print tmdb_df.path
             df_tmdb = tmdb_df.extract_important()
+            df_tmdb = df_tmdb[~pd.isnull(df_tmdb.index)]
         else:
             print 'Failed to add data for TMDB for year', year
 
@@ -133,7 +135,7 @@ def run_year(year=LAST_YEAR, n_top=1000, load_wiki_pages=False, do_imdb=False):
         tmdb_small_path,
         do_omdb=True,
         do_imdb=do_imdb,
-        do_wiki=True,
+        do_wiki=False,
         load_wiki_pages=load_wiki_pages
     )
 
@@ -145,7 +147,10 @@ def run_years(year_stop=LAST_YEAR, year_start=None, **kwargs):
     if year_start is None:
         year_start = year_stop - 9
     for year in range(year_start, year_stop+1):
-        run_year(year, **kwargs)
+        try:
+            run_year(year, **kwargs)
+        except:
+            print 'Creating a database for year', year, 'failed.'
 
 
 if __name__ == '__main__':
