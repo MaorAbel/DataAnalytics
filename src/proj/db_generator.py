@@ -92,6 +92,11 @@ def save_all_intermediary(path, max_records=None, **kwargs):
     save_all_non_tmdb(path_tmdb, **kwargs)
 
 
+def _get_intersection(list1, list2):
+    list3 = list(set(list1).intersection(set(list2)))
+    return [x.strip() for x in list3]
+
+
 def fuse_year(year, do_tmdb=True, do_wiki=False):
 
     print 'Fusing', year, '...'
@@ -119,7 +124,18 @@ def fuse_year(year, do_tmdb=True, do_wiki=False):
         else:
             print 'Failed to add data for IMDB for year', year
 
-    df_fused = pd.concat((df_base, df_tmdb, df_wiki), axis=1)
+    joined = _get_intersection(df_base.index, df_tmdb.index)
+
+    if df_wiki is not None:
+        joined = _get_intersection(joined, df_wiki.index)
+
+    df_base = df_base.loc[joined]
+    df_tmdb = df_tmdb.loc[joined]
+
+    if df_wiki is not None:
+        df_wiki = df_wiki.loc[joined]
+
+    df_fused = pd.concat([df_base, df_tmdb, df_wiki], axis=1)
     fused_db = FusedDB(df_fused, year=year)
     return fused_db.to_csv()
 
