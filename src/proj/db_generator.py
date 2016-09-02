@@ -45,7 +45,16 @@ class TMDBSearcher(object):
         request = Request(querry)
         response_str = urlopen(request).read()
         response_parsed = json.loads(response_str)
-        return response_parsed['results'], response_parsed['total_pages']
+        results = response_parsed['results']
+        for ind, record in enumerate(results):
+            for key, val in record.iteritems():
+                if isinstance(val, str):
+                    if '\n' in val or '\t' in val or '\r' in val:
+                        record[key] = \
+                            val.replace('\n', ' ').replace('\t', ' ').\
+                                replace('\r', ' ')
+            results[ind] = record
+        return results, response_parsed['total_pages']
 
     def tmdb_query_pages(self, n_pages=None):
         list_ = []
@@ -135,7 +144,7 @@ def fuse_year(year, do_tmdb=True, do_wiki=False):
     if df_wiki is not None:
         df_wiki = df_wiki.loc[joined]
 
-    df_fused = pd.concat([df_base, df_tmdb, df_wiki], axis=1)
+    df_fused = pd.concat([df_base, df_tmdb, df_wiki], axis=1).drop_duplicates()
     fused_db = FusedDB(df_fused, year=year)
     return fused_db.to_csv()
 
@@ -196,7 +205,7 @@ if __name__ == '__main__':
 
         # run_year(2015, n_top=60)
 
-        run_years(year_start=2014, year_stop=LAST_YEAR, n_top=60)
+        run_years(year_start=1978, year_stop=1979, n_top=1000)
 
     print 'Done'
 

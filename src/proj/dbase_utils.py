@@ -11,6 +11,8 @@ from glob import glob
 import pandas as pd
 
 
+IMDB_ID_KEY = 'imdb_id'
+
 DB_ROOT = 'DBase'
 if not os.path.isdir(DB_ROOT):
     os.mkdir(DB_ROOT)
@@ -32,11 +34,11 @@ def _get_name_and_year(path):
         return None, None
 
 
-def _df_from_records(list_of_dicts, index_str='imdb_id'):
+def _df_from_records(list_of_dicts, index_str=IMDB_ID_KEY):
     return pd.DataFrame.from_records(list_of_dicts, index=index_str)
 
 
-def _df_from_csv(path, index_col='imdb_id'):
+def _df_from_csv(path, index_col=IMDB_ID_KEY):
     df = pd.DataFrame.from_csv(path, index_col=index_col)
     return df[~pd.isnull(df.index)]
 

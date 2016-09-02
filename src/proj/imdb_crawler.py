@@ -10,7 +10,7 @@ Created on 06/08/16
 import os
 from imdb import IMDb
 from dbase_utils import _DBBase, _df_from_records, _get_releavent_path_year,\
-    load_from_csv, DB_ROOT
+    load_from_csv, DB_ROOT, IMDB_ID_KEY
 
 
 
@@ -58,7 +58,7 @@ class IMDBInterface(object):
     def load_small(self, id):
         out, id = self.load(id)
         dict_ = {}
-        dict_['imdb_id'] = 'tt' + id
+        dict_[IMDB_ID_KEY] = 'tt' + id
         for k in self.info_subset_:
             if k in out:
                 dict_[k] = out[k]

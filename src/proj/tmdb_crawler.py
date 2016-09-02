@@ -12,7 +12,7 @@ import pandas as pd
 from tqdm import tqdm
 import tmdbsimple as tmdb
 from dbase_utils import _get_name_and_year, _df_from_csv, TMDB_PATH, _DBBase,\
-    _df_from_records, _get_releavent_path_year, load_from_csv
+    _df_from_records, _get_releavent_path_year, load_from_csv, IMDB_ID_KEY
 
 
 API_KEY = r'139cb51bf840b3fe8abf0e50def88a4b'
@@ -74,8 +74,8 @@ class TMDBSmall(_DBBase):
         for id in tqdm(ids):
             try:
                 res = tmdb_inter.load(id)
-                if 'imdb_id' in res and res['imdb_id'] is not None and len(
-                        res['imdb_id']) > 0:
+                if IMDB_ID_KEY in res and res[IMDB_ID_KEY] is not None and len(
+                        res[IMDB_ID_KEY]) > 0:
                     list_ += [res]
                 else:
                     print id, 'did not return and IMDb index, dropping it.'
